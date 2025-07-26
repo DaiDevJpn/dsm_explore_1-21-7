@@ -1,5 +1,6 @@
-package jp.dsm.dsm_explore_1_20_7;
+package jp.dsm.explore;
 
+import jp.dsm.explore.core.ModCore;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
