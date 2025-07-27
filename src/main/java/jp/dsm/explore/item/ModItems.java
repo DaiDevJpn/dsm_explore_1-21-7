@@ -13,7 +13,8 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModCore.MODID);
 
     public static RegistryObject<Item> TEST_ITEM = registerItem("test_item", BaseItem::new);
-    public static RegistryObject<Item> TEST_ITEM2 = registerItem("test_item2", BaseItem::new);
+    public static RegistryObject<Item> TEST_ITEM2 = registerItem("test_item2", TestItem::new);
+    public static RegistryObject<Item> TEST_HAMMER = registerItem("test_hammer", HammerItem::new);
 
     public static void register(BusGroup bus){
         ITEMS.register(bus);  // まず最初にバスに登録
