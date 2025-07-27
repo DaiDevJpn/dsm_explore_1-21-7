@@ -2,8 +2,6 @@ package jp.dsm.explore.event;
 
 import jp.dsm.explore.core.ModCore;
 import jp.dsm.explore.item.HammerItem;
-import net.minecraft.client.multiplayer.chat.report.Report;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;

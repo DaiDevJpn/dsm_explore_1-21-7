@@ -20,7 +20,7 @@ public class HammerItem extends Item implements IdCreator{
 
     @Override
     public float getDestroySpeed(ItemStack itemStack, BlockState state) {
-        Tool tool = (Tool) itemStack.get(DataComponents.TOOL);
+        Tool tool = itemStack.get(DataComponents.TOOL);
         float mSpeed = tool != null ? tool.getMiningSpeed(state) : 1.0F;
         return (1.0F - (float)itemStack.getDamageValue() / (float) itemStack.getMaxDamage()) * mSpeed;
     }
