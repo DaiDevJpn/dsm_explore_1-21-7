@@ -16,9 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 
 public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRecipe> {
 
