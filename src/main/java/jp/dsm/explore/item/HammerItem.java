@@ -11,8 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class HammerItem extends Item implements IdCreator{
 
     public static final Properties PROP = new Properties()
-            .tool(ToolMaterial.STONE, BlockTags.MINEABLE_WITH_PICKAXE, 5.0F, -3.0F, 1.5F)
-            .overrideDescription("TEST DESC");
+            .tool(ToolMaterial.STONE, BlockTags.MINEABLE_WITH_PICKAXE, 5.0F, -3.0F, 1.5F);
 
     public HammerItem(String id){
         super(IdCreator.validateId(PROP, id));

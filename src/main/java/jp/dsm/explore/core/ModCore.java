@@ -18,8 +18,8 @@ public class ModCore {
 
     public ModCore(FMLJavaModLoadingContext ctx){
         BusGroup bus = ctx.getModBusGroup();
-        LOGGER.info(" loaded : {}", MODID);
+        LOGGER.info("[DSM]loaded : {}", MODID);
         ModItems.register(bus);
-        LOGGER.info("register : {}", ModItems.class);
+        LOGGER.info("[DSM]register : {}", ModItems.class);
     }
 }

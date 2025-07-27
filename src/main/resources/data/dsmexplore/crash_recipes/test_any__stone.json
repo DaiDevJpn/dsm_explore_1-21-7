@@ -1,10 +1,10 @@
 {
   "hammer": "dsmexplore:test_hammer",
-  "target": { "block": "minecraft:cobblestone" },
-  "base": {
+  "target": { "block": "minecraft:stone" },
+  "base":   {
     "item": "minecraft:gravel",
-    "min": 1,
-    "max": 3,
+    "count" :{"min": 1, "max": 3},
     "chance": 1.0
-  }
+  },
+  "additional": []
 }

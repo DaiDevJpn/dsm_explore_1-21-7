@@ -2,6 +2,10 @@ package jp.dsm.explore.event;
 
 import jp.dsm.explore.core.ModCore;
 import jp.dsm.explore.item.HammerItem;
+import jp.dsm.explore.recipe.common.DropEntry;
+import jp.dsm.explore.recipe.common.ReloadListenerRegister;
+import jp.dsm.explore.recipe.crash_recipe.CrashRecipe;
+import jp.dsm.explore.recipe.crash_recipe.CrashRecipeManager;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,38 +19,47 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mod.EventBusSubscriber(modid = ModCore.MODID)
 public class HammerCrashEvent {
 
     @SubscribeEvent
-    public static void onBlockBroken(BlockEvent.BreakEvent event){
+    public static void onBlockBroken(BlockEvent.BreakEvent event) {
         Level level = (Level) event.getLevel();
-        if (level.isClientSide())return;
+        if (level.isClientSide()) return;
 
         Player player = event.getPlayer();
         ItemStack held = player.getMainHandItem();
 
-        if (!(held.getItem() instanceof HammerItem))return;
-
-        ModCore.LOGGER.info("HCE CALLED");
-
-        //↓--TestCode--↓
+        if (!(held.getItem() instanceof HammerItem hammer)) return;
 
         BlockState state = event.getState();
-        Block block =  state.getBlock();
+        Block block = state.getBlock();
 
-        if (!(block == Blocks.COBBLESTONE || block == Blocks.STONE))return;
+        CrashRecipeManager manager = ReloadListenerRegister.getManager();
+        CrashRecipe recipe = manager.find(hammer, block);
+        if (recipe == null) return;
 
         event.setResult(Result.DENY);
         level.removeBlock(event.getPos(), false);
 
-        if (!player.isCreative() && held.isDamageableItem()){
+        if (!player.isCreative() && held.isDamageableItem()) {
             held.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
         }
 
-        ItemStack drop = new ItemStack(Blocks.GRAVEL);
-        ItemEntity dropE = new ItemEntity(level, event.getPos().getCenter().x, event.getPos().getCenter().y, event.getPos().getCenter().z, drop);
+        List<ItemEntity> drops = new ArrayList<>();
 
-        level.addFreshEntity(dropE);
+        ItemStack dropB = recipe.baseOutput().createStack(level.getRandom());
+        drops.add(new ItemEntity(level, event.getPos().getCenter().x, event.getPos().getCenter().y, event.getPos().getCenter().z, dropB));
+
+        for (DropEntry d : recipe.additionalOutputs()) {
+            ItemStack dropA = d.createStack(level.getRandom());
+            drops.add(new ItemEntity(level, event.getPos().getCenter().x, event.getPos().getCenter().y, event.getPos().getCenter().z, dropA));
+        }
+
+        drops.forEach(level::addFreshEntity);
+
     }
 }
