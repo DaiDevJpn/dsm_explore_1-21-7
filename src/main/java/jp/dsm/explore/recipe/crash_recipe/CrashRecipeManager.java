@@ -14,6 +14,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -25,7 +26,6 @@ public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRe
     public CrashRecipeManager(HolderLookup.Provider provider) {
         super(provider, CrashRecipe.CODEC, ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(ModCore.MODID, "crash_recipes")));
     }
-
 
     @Override
     protected Map<ResourceLocation, CrashRecipe> prepare(ResourceManager rm, ProfilerFiller profiler) {
@@ -40,7 +40,7 @@ public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRe
                         CrashRecipe recipe = CrashRecipe.CODEC.parse(JsonOps.INSTANCE, jsonElement)
                                 .getOrThrow();
                         out.put(rl, recipe);
-                        ModCore.LOGGER.info("[DSM] Loaded recipe: {}", rl);
+                        ModCore.LOGGER.info("[DSM][CrashRecipeManager] Loaded recipe: {}", rl);
                     } catch (Exception ex) {
                         ModCore.LOGGER.error("Error reading recipe from {}", rl, ex);
                     }
@@ -53,19 +53,20 @@ public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRe
     protected void apply(Map<ResourceLocation, CrashRecipe> data, ResourceManager rm, ProfilerFiller profiler) {
         index.clear();
         for (CrashRecipe r : data.values()){
-            int hammerId = Item.getId(r.hammer());
-            Int2ObjectMap<CrashRecipe> byBlock = index.computeIfAbsent(
-                    hammerId, k -> new Int2ObjectOpenHashMap<>()
-            );
+            for (Item hammer : r.hammer().expandToItems()) {
+                int hammerId = Item.getId(hammer);
+                Int2ObjectMap<CrashRecipe> byBlock = index.computeIfAbsent(
+                        hammerId, k -> new Int2ObjectOpenHashMap<>()
+                );
 
-            for (Block b : r.target().expandToBlocks()){
-                int blockId = Block.getId(b.defaultBlockState());
-                byBlock.putIfAbsent(blockId, r);
+                for (Block b : r.target().expandToBlocks()) {
+                    int blockId = Block.getId(b.defaultBlockState());
+                    byBlock.putIfAbsent(blockId, r);
+                }
             }
         }
-        ModCore.LOGGER.info("[DSM]apply() hit, map size={}", data.size());
-        data.forEach((id, r) -> ModCore.LOGGER.info("[DSM]key={} hammer={}", id, r.hammer()));
-        ModCore.LOGGER.info("[DSM] Loaded {} recipes", index.size());
+
+        ModCore.LOGGER.info("[DSM][CrashRecipeManager] Loaded {} recipes", index.size());
     }
 
     public CrashRecipe find(Item hammer, Block block){

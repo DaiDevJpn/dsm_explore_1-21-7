@@ -1,10 +1,21 @@
 {
-  "hammer": "dsmexplore:test_hammer",
+  "hammer": { "item": "dsmexplore:test_hammer"},
   "target": { "block": "minecraft:stone" },
   "base":   {
     "item": "minecraft:gravel",
     "count" :{"min": 1, "max": 3},
     "chance": 1.0
   },
-  "additional": []
+  "additional": [
+    {
+      "item": "minecraft:flint",
+      "count": 1,
+      "chance": 0.10
+    },
+    {
+      "item": "minecraft:diamond",
+      "count": 1,
+      "chance": 0.001
+    }
+  ]
 }

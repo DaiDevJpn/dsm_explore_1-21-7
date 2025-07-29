@@ -20,6 +20,5 @@ public class ModCore {
         BusGroup bus = ctx.getModBusGroup();
         LOGGER.info("[DSM]loaded : {}", MODID);
         ModItems.register(bus);
-        LOGGER.info("[DSM]register : {}", ModItems.class);
     }
 }

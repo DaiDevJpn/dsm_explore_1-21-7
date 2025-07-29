@@ -9,17 +9,12 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = ModCore.MODID)
 public class ReloadListenerRegister {
 
-    private static CrashRecipeManager MANAGER;   // ← 実行時にアクセスしたいなら保持
-
-    static {
-        ModCore.LOGGER.info("[DSM]ReloadListenerRegister loaded!");
-    }
+    private static CrashRecipeManager MANAGER;
 
     @SubscribeEvent
     public static void register(AddReloadListenerEvent e){
         MANAGER = new CrashRecipeManager(e.getRegistries());
         e.addListener(MANAGER);
-        ModCore.LOGGER.info("[DSM]road : {}", MANAGER);
     }
 
     public static CrashRecipeManager getManager() {

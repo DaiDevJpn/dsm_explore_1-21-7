@@ -15,17 +15,16 @@ public sealed interface BlockPredicate permits BlockPredicate.BlockMatch, BlockP
     boolean matches(Block block);
 
     default Set<Block> expandToBlocks(){
-        if (this instanceof BlockMatch bm){
-            Block block = ForgeRegistries.BLOCKS.getValue(bm.blockId());
-            return block != null ? Set.of(block) : Collections.emptySet();
-        }else if (this instanceof TagMatch tm){
-            TagKey<Block> tag = TagKey.create(Registries.BLOCK, tm.tagId());
-            return ForgeRegistries.BLOCKS.getValues()
+        return switch (this){
+            case BlockMatch bm -> {
+                Block block = ForgeRegistries.BLOCKS.getValue(bm.blockId());
+                yield  block != null ? Set.of(block) : Collections.emptySet();
+            }
+            case TagMatch tm -> ForgeRegistries.BLOCKS.getValues()
                     .stream()
-                    .filter(b -> b.defaultBlockState().is(tag))
+                    .filter(b -> b.defaultBlockState().is(TagKey.create(Registries.BLOCK, tm.tagId())))
                     .collect(Collectors.toUnmodifiableSet());
-        }
-        return Set.of();
+        };
     }
 
     record BlockMatch(ResourceLocation blockId) implements BlockPredicate{
@@ -35,10 +34,19 @@ public sealed interface BlockPredicate permits BlockPredicate.BlockMatch, BlockP
         }
     }
 
-    record TagMatch(ResourceLocation tagId) implements BlockPredicate{
+    record TagMatch(TagKey<Block> tag) implements BlockPredicate{
+
+        public TagMatch(ResourceLocation tagId){
+            this(TagKey.create(Registries.BLOCK, tagId));
+        }
+
         @Override
         public boolean matches(Block block) {
-            return block.defaultBlockState().is(TagKey.create(Registries.BLOCK, tagId));
+            return block.defaultBlockState().is(tag);
+        }
+
+        public ResourceLocation tagId() {
+            return tag.location();
         }
     }
 }
