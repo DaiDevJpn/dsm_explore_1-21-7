@@ -3,8 +3,6 @@ package jp.dsm.explore.recipe.crash_recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import jp.dsm.explore.recipe.common.*;
-import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
