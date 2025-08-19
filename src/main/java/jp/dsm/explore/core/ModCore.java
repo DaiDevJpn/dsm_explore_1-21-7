@@ -1,6 +1,7 @@
 package jp.dsm.explore.core;
 
 import com.mojang.logging.LogUtils;
+import jp.dsm.explore.block.ModBlocks;
 import jp.dsm.explore.item.ModItems;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.common.Mod;
@@ -20,5 +21,6 @@ public class ModCore {
         BusGroup bus = ctx.getModBusGroup();
         LOGGER.info("[DSM]loaded : {}", MODID);
         ModItems.register(bus);
+        ModBlocks.register(bus);
     }
 }

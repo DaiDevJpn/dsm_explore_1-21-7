@@ -1,5 +1,5 @@
 {
-  "hammer": { "item": "dsmexplore:test_hammer"},
+  "tool": { "item": "dsmexplore:test_hammer"},
   "target": { "block": "minecraft:stone" },
   "base":   {
     "item": "minecraft:gravel",

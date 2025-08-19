@@ -7,7 +7,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import static jp.dsm.explore.item.RegisterHelper.ItemRegister.registerItem;
+import static jp.dsm.explore.util.RegisterHelper.ItemRegister.registerItem;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModCore.MODID);

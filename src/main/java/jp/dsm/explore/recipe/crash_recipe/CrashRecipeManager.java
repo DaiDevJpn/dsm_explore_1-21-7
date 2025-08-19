@@ -2,8 +2,8 @@ package jp.dsm.explore.recipe.crash_recipe;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import jp.dsm.explore.core.ModCore;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
@@ -14,17 +14,23 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.io.InputStream;
 import java.util.Map;
 
 public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRecipe> {
 
-    private final Int2ObjectMap<Int2ObjectMap<CrashRecipe>> index = new Int2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<CrashRecipe> index = new Long2ObjectOpenHashMap<>();
 
     public CrashRecipeManager(HolderLookup.Provider provider) {
         super(provider, CrashRecipe.CODEC, ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(ModCore.MODID, "crash_recipes")));
+    }
+
+    private static final int ITEM_ANY = -1;
+
+    public static long packKey(int itemId, int blockStateId){
+        return ((long) itemId << 32) ^ (blockStateId & 0xFFFFFFFFL);
     }
 
     @Override
@@ -53,15 +59,22 @@ public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRe
     protected void apply(Map<ResourceLocation, CrashRecipe> data, ResourceManager rm, ProfilerFiller profiler) {
         index.clear();
         for (CrashRecipe r : data.values()){
-            for (Item hammer : r.hammer().expandToItems()) {
-                int hammerId = Item.getId(hammer);
-                Int2ObjectMap<CrashRecipe> byBlock = index.computeIfAbsent(
-                        hammerId, k -> new Int2ObjectOpenHashMap<>()
-                );
 
-                for (Block b : r.target().expandToBlocks()) {
-                    int blockId = Block.getId(b.defaultBlockState());
-                    byBlock.putIfAbsent(blockId, r);
+            var tools = r.hammer().expandToItems();
+            var blocks = r.target().expandToBlocks();
+
+            if (tools.isEmpty()){
+                for (Block b : blocks){
+                    int bId = Block.getId(b.defaultBlockState());
+                    index.putIfAbsent(packKey(ITEM_ANY, bId), r);
+                }
+            } else {
+                for (Item i : tools){
+                    int iId = Item.getId(i);
+                    for (Block b : blocks){
+                        int bId = Block.getId(b.defaultBlockState());
+                        index.putIfAbsent(packKey(iId, bId), r);
+                    }
                 }
             }
         }
@@ -69,9 +82,12 @@ public class CrashRecipeManager extends SimpleJsonResourceReloadListener<CrashRe
         ModCore.LOGGER.info("[DSM][CrashRecipeManager] Loaded {} recipes", index.size());
     }
 
-    public CrashRecipe find(Item hammer, Block block){
-        Int2ObjectMap<CrashRecipe> byBlock = index.get(Item.getId(hammer));
-        if (byBlock == null)return null;
-        return byBlock.get(Block.getId(block.defaultBlockState()));
+    public CrashRecipe find(Item tool, BlockState blockState){
+        int iId = Item.getId(tool);
+        int bId = Block.getId(blockState);
+
+        CrashRecipe r = index.get(packKey(iId, bId));
+        if (r != null)return r;
+        return index.get(packKey(ITEM_ANY, bId));
     }
 }

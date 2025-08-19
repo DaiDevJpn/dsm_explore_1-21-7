@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public sealed interface ItemPredicate permits ItemPredicate.ItemMatch, ItemPredicate.TagMatch{
+public sealed interface ItemPredicate permits ItemPredicate.Any, ItemPredicate.ItemMatch, ItemPredicate.TagMatch {
     boolean matches(Item item);
 
     default Set<Item> expandToItems(){
@@ -24,6 +24,7 @@ public sealed interface ItemPredicate permits ItemPredicate.ItemMatch, ItemPredi
                   .getTag(TagKey.create(Registries.ITEM, tm.tagId()))
                   .stream()
                   .collect(Collectors.toUnmodifiableSet());
+          case Any ignored -> Collections.emptySet();
         };
     }
 
@@ -47,6 +48,13 @@ public sealed interface ItemPredicate permits ItemPredicate.ItemMatch, ItemPredi
 
         public ResourceLocation tagId() {
             return tag.location();
+        }
+    }
+
+    record Any() implements ItemPredicate{
+        @Override
+        public boolean matches(Item item) {
+            return true;
         }
     }
 }

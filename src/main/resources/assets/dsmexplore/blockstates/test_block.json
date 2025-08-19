@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "dsmexplore:block/test_block"
+    }
+  }
+}
