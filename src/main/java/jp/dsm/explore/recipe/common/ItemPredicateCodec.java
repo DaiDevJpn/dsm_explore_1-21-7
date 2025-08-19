@@ -9,24 +9,9 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Optional;
 
 public class ItemPredicateCodec {
-    public static final Codec<ItemPredicate> CODEC = Codec.either(
-            ResourceLocation.CODEC.fieldOf("item").codec().xmap(
-                    ItemPredicate.ItemMatch::new,
-                    ItemPredicate.ItemMatch::itemId
-            ),
-            ResourceLocation.CODEC.fieldOf("tag").codec().xmap(
-                    ItemPredicate.TagMatch::new,
-                    ItemPredicate.TagMatch::tagId
-            )
-    ).xmap(
-            either -> either.map(b -> b, t -> t),
-            pred -> (pred instanceof ItemPredicate.ItemMatch i) ? Either.left(i) : Either.right((ItemPredicate.TagMatch) pred)
-    );
-
-
     private record Raw(Optional<ResourceLocation> item, Optional<ResourceLocation> tag, boolean any){}
 
-    public static final Codec<ItemPredicate> CODEC2 = RecordCodecBuilder.<Raw>create(i -> i.group(
+    public static final Codec<ItemPredicate> CODEC = RecordCodecBuilder.<Raw>create(i -> i.group(
             ResourceLocation.CODEC.optionalFieldOf("item").forGetter(Raw::item),
             ResourceLocation.CODEC.optionalFieldOf("tag").forGetter(Raw::tag),
             Codec.BOOL.optionalFieldOf("any", false).forGetter(Raw::any)

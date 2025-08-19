@@ -17,8 +17,8 @@ public class RegisterHelper {
             return ModItems.ITEMS.register(id, () -> factory.create(id));
         }
 
-        public static RegistryObject<Item> registerBlockItem(String id, RegistryObject<Block> block){
-            return ModItems.ITEMS.register(id, () -> new BlockItem(block.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ModCore.MODID, id)))));
+        public static void registerBlockItem(String id, RegistryObject<Block> block){
+            ModItems.ITEMS.register(id, () -> new BlockItem(block.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(ModCore.MODID, id)))));
         }
 
         @FunctionalInterface
